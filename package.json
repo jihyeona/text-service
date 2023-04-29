@@ -1,0 +1,22 @@
+{
+  "name": "text-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jihyeona/text-service.git"
+  },
+  "author": "jihyeona",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jihyeona/text-service/issues"
+  },
+  "homepage": "https://github.com/jihyeona/text-service#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
