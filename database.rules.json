@@ -1,0 +1,13 @@
+{
+  "rules": {
+    ".read": "now < 1685311200000",  
+    ".write": "now < 1685311200000",  
+    "messages": {
+      ".indexOn": ["receiver_id", "timestamp", "receiver_id_timestamp"],
+      "$messageId": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}

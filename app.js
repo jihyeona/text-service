@@ -98,28 +98,35 @@ app.get("/messages/:userId", async (req, res) => {
   const userId = req.params.userId;
   const start = parseInt(req.query.start) || 0;
   const stop = parseInt(req.query.stop) || 10;
+  const lastFetchedTimestamp = parseInt(req.query.lastFetchedTimestamp); 
+
   const database = admin.database();
-  const ref = database.ref("messages");
+  const query = database.ref("messages").orderByChild('receiver_id_timestamp');
   
   try {
-    const snapshot = await ref
-      .orderByChild("receiver_id")
-      .equalTo(userId)
-      .limitToLast(stop - start)
-      .once("value");
-
+    const snapshot = await query.once("value");
+    console.log('snapshot', snapshot.val());
     let messages = [];
 
     snapshot.forEach((childSnapshot) => {
       const message = childSnapshot.val();
-      console.log('message:', message)
-      message.id = childSnapshot.key;
-      console.log('message.id:', message.id)
-      messages.push(message);
+      if (message.receiver_id === userId) {
+        message.id = childSnapshot.key;
+        messages.push(message);
+        console.log('message that matches user id', message);
+      }
     });
 
-    messages.reverse();
+    messages.sort((a, b) => a.timestamp - b.timestamp);
+
+    if (lastFetchedTimestamp) {
+      messages = messages.filter((message) => message.timestamp > lastFetchedTimestamp);
+      console.log('newly fetched messages', messages);
+    }
+
+    // messages.reverse();
     messages = messages.slice(messages.length - stop, messages.length - start);
+    console.log('final messages', messages);
 
     res.json(messages);
   } catch (error) {
