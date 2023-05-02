@@ -47,12 +47,11 @@ app.post("/users", (req, res) => {
   const database = admin.database();
   const ref = database.ref("users");
   const newUserRef = ref.push();
-
-  const { email } = req.body;
+  const { name } = req.body;
 
   newUserRef
     .set({
-      email: email,
+      name: name,
     }).then(() => {
       res.send("User created successfully!");
     }).catch(error => {
@@ -65,15 +64,15 @@ app.post("/messages", async (req, res) => {
   const database = admin.database();
   const ref = database.ref("messages");
   const newMessageRef = ref.push();
+  const { senderId, receiverIdentifier, text } = req.body;
 
   try {
-    const { senderId, receiverIdentifier, text } = req.body;
     // check if the recipient exists
-    const receiverSnapshot = await database.ref("users").orderByChild("email").equalTo(receiverIdentifier).once("value");
+    const receiverSnapshot = await database.ref("users").orderByChild("name").equalTo(receiverIdentifier).once("value");
     if (!receiverSnapshot.exists()) {
       return res.status(400).send('Recipient does not exist');
     }
-    
+  
     const receiverId = Object.keys(receiverSnapshot.val())[0];
     
     newMessageRef
@@ -94,6 +93,32 @@ app.post("/messages", async (req, res) => {
     }
 });
 
+app.delete("/messages", async (req, res) => {
+  const database = admin.database();
+  const ref = database.ref("messages");
+  const { messageIds } = req.body;
+
+  try {
+    const promises = messageIds.map(async (messageId) => {
+      // check if the message with matching id exists
+      const snapshot = await ref.child(messageId).once("value");
+      if (snapshot.exists()) {
+        return ref.child(messageId).remove();
+      } else {
+      throw new Error(`Message with id ${messageId} not found`);
+      }
+    });
+
+    await Promise.all(promises).then(() => {
+        console.log("Messages deleted successfully!");
+        res.send("Messages deleted successfully!");
+    });
+  } catch (error) {
+    console.log("Error deleting the messages:", error);
+    res.status(500).send("Error deleting the messages");
+  }
+});
+
 app.get("/messages/:userId", async (req, res) => {
   const userId = req.params.userId;
   const start = parseInt(req.query.start) || 0;
@@ -105,7 +130,7 @@ app.get("/messages/:userId", async (req, res) => {
   
   try {
     const snapshot = await query.once("value");
-    console.log('snapshot', snapshot.val());
+
     let messages = [];
 
     snapshot.forEach((childSnapshot) => {
@@ -113,7 +138,6 @@ app.get("/messages/:userId", async (req, res) => {
       if (message.receiver_id === userId) {
         message.id = childSnapshot.key;
         messages.push(message);
-        console.log('message that matches user id', message);
       }
     });
 
@@ -121,13 +145,9 @@ app.get("/messages/:userId", async (req, res) => {
 
     if (lastFetchedTimestamp) {
       messages = messages.filter((message) => message.timestamp > lastFetchedTimestamp);
-      console.log('newly fetched messages', messages);
     }
 
-    // messages.reverse();
-    messages = messages.slice(messages.length - stop, messages.length - start);
-    console.log('final messages', messages);
-
+    messages = messages.slice(start, stop);
     res.json(messages);
   } catch (error) {
     console.error(error);
