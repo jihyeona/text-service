@@ -30,4 +30,9 @@ Additionally, you can add query parameters to specify the range of messages to b
 The start and stop parameters specify the range of messages to be fetched.   
 `curl -X GET http://localhost:3000/messages/{userId}?lastFetchedTimestamp={lastFetchedTimestamp}?start={startIndex}&stop={stopIndex}`  
 The lastFetchedTimestamp parameter is used to fetch new messages that were sent after the last fetched message.   
-Replace `{lastFetchedTimestamp}` with the timestamp of the last message that has been fetched. 
+Replace `{lastFetchedTimestamp}` with the timestamp of the last message that has been fetched.  
+
+5. delete message  
+`curl -X DELETE -H "Content-Type: application/json" -d '{"messageIds":["messageId1","messageId2"]}' http://localhost:3000/messages`  
+Replace `messageId1` and `messageId2` with the IDs of the messages you want to delete. You can add as many message IDs as you want, separated by commas.
+
