@@ -10,23 +10,33 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
 
+const createTestUsers = async () => {
+  const database = admin.database();
+  const ref = database.ref("users");
+  const testUsers = [
+    {
+      name: "Michael Scott",
+    },
+    {
+      name: "Dwight Schrute",
+    },
+  ];
+
+  const promises = testUsers.map((user) => {
+    const newUserRef = ref.push();
+    return newUserRef.set(user);
+  });
+
+  await Promise.all(promises).then(() => {
+    console.log("Test users created successfully!");
+  });
+};
+
+createTestUsers();
+
 const app = express();
 app.use(express.json());
 const port = 3000;
-
-app.get("/", (req, res) => {
-  const database = admin.database();
-  const ref = database.ref("test");
-  ref
-    .set("Hello, world, again!")
-    .then(() => {
-      res.send("Firebase initialised successfully!");
-    })
-    .catch((error) => {
-      console.error("Error writing to Firebase:", error);
-      res.status(500).send("Error writing to Firebase");
-    });
-});
 
 app.get("/users", (req, res) => {
   const database = admin.database();
@@ -46,9 +56,18 @@ app.get("/users", (req, res) => {
 app.post("/users", (req, res) => {
   const database = admin.database();
   const ref = database.ref("users");
-  const newUserRef = ref.push();
   const { name } = req.body;
 
+  // check if the user name already exists. If it does, return an error
+  ref.orderByChild("name").equalTo(name).once("value", (snapshot) => {
+    if (snapshot.exists()) {
+      res.status(400).send('This user name already exists');
+      return;
+    }
+  })
+
+  // create a new user
+  const newUserRef = ref.push();
   newUserRef
     .set({
       name: name,
@@ -69,6 +88,7 @@ app.post("/messages", async (req, res) => {
   try {
     // check if the recipient exists
     const receiverSnapshot = await database.ref("users").orderByChild("name").equalTo(receiverIdentifier).once("value");
+    console.log();
     if (!receiverSnapshot.exists()) {
       return res.status(400).send('Recipient does not exist');
     }
@@ -95,16 +115,17 @@ app.post("/messages", async (req, res) => {
 
 app.delete("/messages", async (req, res) => {
   const database = admin.database();
-  const ref = database.ref("messages");
+  const messageRef = database.ref("messages");
   const { messageIds } = req.body;
 
   try {
     const promises = messageIds.map(async (messageId) => {
       // check if the message with matching id exists
-      const snapshot = await ref.child(messageId).once("value");
-      if (snapshot.exists()) {
-        return ref.child(messageId).remove();
+      const messageToDelete = await messageRef.child(messageId).once("value");
+      if (messageToDelete.exists()) {
+        return messageRef.child(messageId).remove();
       } else {
+        // TODO: return a error summary to show which messages were not found
       throw new Error(`Message with id ${messageId} not found`);
       }
     });
@@ -120,7 +141,7 @@ app.delete("/messages", async (req, res) => {
 });
 
 app.get("/messages/:userId", async (req, res) => {
-  const userId = req.params.userId;
+  const { userId } = req.params;
   const start = parseInt(req.query.start) || 0;
   const stop = parseInt(req.query.stop) || 10;
   const lastFetchedTimestamp = parseInt(req.query.lastFetchedTimestamp); 
