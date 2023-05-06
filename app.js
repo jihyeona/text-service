@@ -36,7 +36,7 @@ createTestUsers();
 
 const app = express();
 app.use(express.json());
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.get("/users", (req, res) => {
   const database = admin.database();
