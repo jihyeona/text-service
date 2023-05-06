@@ -38,7 +38,7 @@ The endpoints are implemented in RESTful convention.
 #### GET /messages/:userId  
     Get messages for a user
     Request:  
-    GET /messages/:userId?start=0&stop=10&lastFetchedTimestamp=1620704560992
+    GET /messages/-NUcHV-azaCfdNQ5Z5Aw?lastFetchedTimestamp=1620704560992&start=0&stop=10
 
 ## To test the service
 You can test the service with curl, for example, as below.  
