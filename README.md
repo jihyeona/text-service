@@ -1,11 +1,45 @@
 # text-service
 
-This is a service for sending, retrieving and deleting text messages.
+This is a service for sending, retrieving and deleting plain text messages.
 
 ## Tech stack
-The server is built in Node.js with Express.js, hosted with Render.     
-Data is stored and hosted in Firebase Realtime Database.    
-  
+The server is built with Express.js, and hosted with Render.   
+Data is stored and hosted in Firebase Realtime Database.  
+The endpoints are implemented in RESTful convention.  
+
+## API documentation
+
+### Base URL
+`https://text-service.onrender.com`  
+
+### Endpoints
+
+#### GET /users  
+    Retrieve all users in the database  
+
+#### POST /users  
+    Create a new user  
+    Request:
+    Content-Type: application/json  
+    {"name": "Michael Scott"}  
+
+#### DELETE /messages  
+    Delete messages by message ID  
+    Request:  
+    Content-Type: application/json  
+    {"messageIds": ["message-id-1", "message-id-2"]}  
+
+#### POST /messages  
+    Send a message
+    Request:
+    Content-Type: application/json  
+    {"senderId": "-NUcHV-azaCfdNQ5Z5Aw", "receiverIdentifier": "Dwight Schrute", "text": "Hello, Dwight!"}  
+
+#### GET /messages/:userId  
+    Get messages for a user
+    Request:  
+    GET /messages/:userId?start=0&stop=10&lastFetchedTimestamp=1620704560992
+
 ## To test the service
 To run this locally, run `npm install` and `node app.js` to get the server running.  
 
