@@ -12,30 +12,6 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
 
-const createTestUsers = async () => {
-  const database = admin.database();
-  const ref = database.ref("users");
-  const testUsers = [
-    {
-      name: "Michael Scott",
-    },
-    {
-      name: "Dwight Schrute",
-    },
-  ];
-
-  const promises = testUsers.map((user) => {
-    const newUserRef = ref.push();
-    return newUserRef.set(user);
-  });
-
-  await Promise.all(promises).then(() => {
-    console.log("Test users created successfully!");
-  });
-};
-
-createTestUsers();
-
 const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3000;
@@ -64,21 +40,20 @@ app.post("/users", (req, res) => {
   ref.orderByChild("name").equalTo(name).once("value", (snapshot) => {
     if (snapshot.exists()) {
       res.status(400).send('This user name already exists');
-      return;
+    } else {
+      // create a new user
+      const newUserRef = ref.push();
+      newUserRef
+        .set({
+          name: name,
+        }).then(() => {
+          res.send("User created successfully!");
+        }).catch(error => {
+          console.log('Error creating user:', error);
+          res.status(500).send("Error creating user");
+        });
     }
-  })
-
-  // create a new user
-  const newUserRef = ref.push();
-  newUserRef
-    .set({
-      name: name,
-    }).then(() => {
-      res.send("User created successfully!");
-    }).catch(error => {
-      console.log('Error creating user:', error);
-      res.status(500).send("Error creating user");
-    })
+  })  
 })
 
 app.post("/messages", async (req, res) => {
