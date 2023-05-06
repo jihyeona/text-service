@@ -24,20 +24,20 @@ Replace `username` with the name of the user you want to create.
 3. send a message  
 `curl -X POST -H "Content-Type: application/json" -d '{"senderId":"123", "receiverIdentifier":"username", "text":"Hello, world!"}' https://text-service.onrender.com/messages`  
 
-Replace the values for `senderId`, `receiverIdentifier`, and `text` with appropriate values to send a message.  
-The receiverIdentifier should be the user name of the recipient.
+    Replace the values for `senderId`, `receiverIdentifier`, and `text` with appropriate values to send a message.  
+    The receiverIdentifier should be the user name of the recipient.
 
 4. fetch message  
 `curl -X GET https://text-service.onrender.com/messages/{userId}`  
 Replace `{userId}` with the ID of the user for whom you want to fetch the messages.   
 
-`curl -X GET https://text-service.onrender.com/messages/{userId}?start={startIndex}&stop={stopIndex}`  
-Additionally, you can add query parameters to specify the range of messages to be fetched.   
-The start and stop parameters specify the range of messages to be fetched.   
+    `curl -X GET https://text-service.onrender.com/messages/{userId}?start={startIndex}&stop={stopIndex}`  
+    Additionally, you can add query parameters to specify the range of messages to be fetched.   
+    The start and stop parameters specify the range of messages to be fetched.   
 
-`curl -X GET https://text-service.onrender.com/messages/{userId}?lastFetchedTimestamp={lastFetchedTimestamp}?start={startIndex}&stop={stopIndex}`  
-The lastFetchedTimestamp parameter is used to fetch new messages that were sent after the last fetched message.   
-Replace `{lastFetchedTimestamp}` with the timestamp of the last message that has been fetched.  
+    `curl -X GET https://text-service.onrender.com/messages/{userId}?lastFetchedTimestamp={lastFetchedTimestamp}?start={startIndex}&stop={stopIndex}`  
+    The lastFetchedTimestamp parameter is used to fetch new messages that were sent after the last fetched message.   
+    Replace `{lastFetchedTimestamp}` with the timestamp of the last message that has been fetched.  
 
 5. delete message  
 `curl -X DELETE -H "Content-Type: application/json" -d '{"messageIds":["messageId1","messageId2"]}' https://text-service.onrender.com/messages`  
