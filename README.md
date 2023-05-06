@@ -41,12 +41,10 @@ The endpoints are implemented in RESTful convention.
     GET /messages/:userId?start=0&stop=10&lastFetchedTimestamp=1620704560992
 
 ## To test the service
-To run this locally, run `npm install` and `node app.js` to get the server running.  
+You can test the service with curl, for example, as below.  
 
-Recipient is identified with its user name.   
-
-You can test the service with curl, as below.  
-Replace the root url to http://localhost:3000 if you want to test the endpoint locally.  
+To run the server locally, run `npm install` and `node app.js`.  
+If you want to test the endpoints locally, you will need a secret file for firebase database configuration and change the FIREBASE_KEY_PATH at .env file with the path of directory where you have stored the secret. Finally, replace the base url with http://localhost:3000.  
 
 1. create a user  
 `curl -X POST -H "Content-Type: application/json" -d '{"name":"username"}' https://text-service.onrender.com/users`  
