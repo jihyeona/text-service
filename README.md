@@ -16,18 +16,21 @@ The endpoints are implemented in RESTful convention.
 
 #### GET /users  
     Retrieve all users in the database  
+    Response:
+    {
+        "-NUcHV-azaCfdNQ5Z5Aw": {
+            "name": "Michael Scott"
+        },
+        "-NUcHV-b6c8gBEa7BkQY": {
+            "name": "Dwight Schrute"
+        }
+    }  
 
 #### POST /users  
     Create a new user  
     Request:
     Content-Type: application/json  
     {"name": "Michael Scott"}  
-
-#### DELETE /messages  
-    Delete messages by message ID  
-    Request:  
-    Content-Type: application/json  
-    {"messageIds": ["message-id-1", "message-id-2"]}  
 
 #### POST /messages  
     Send a message
@@ -38,7 +41,30 @@ The endpoints are implemented in RESTful convention.
 #### GET /messages/:userId  
     Get messages for a user
     Request:  
-    GET /messages/-NUcHV-azaCfdNQ5Z5Aw?lastFetchedTimestamp=1620704560992&start=0&stop=10
+    GET /messages/-NUcHV-b6c8gBEa7BkQY?lastFetchedTimestamp=1683458094129&start=0&stop=2  
+    Response:
+    [
+    {
+        "receiver_id": "-NUcHV-b6c8gBEa7BkQY",
+        "sender_id": "-NUcHV-azaCfdNQ5Z5Aw",
+        "text": "Hi, this is your girlfriend, and I'm mad!",
+        "timestamp": 1683458112763,
+        "id": "-NUpv2nQg3_LzEfJnaI-"
+    },
+    {
+        "receiver_id": "-NUcHV-b6c8gBEa7BkQY",
+        "sender_id": "-NUcHV-azaCfdNQ5Z5Aw",
+        "text": "Karate",
+        "timestamp": 1683458134789,
+        "id": "-NUpv8AapAZt2O6XXMOh"
+    }
+] 
+
+#### DELETE /messages  
+    Delete messages by message ID  
+    Request:  
+    Content-Type: application/json  
+    {"messageIds": ["-NUpv2nQg3_LzEfJnaI-", "-NUpv8AapAZt2O6XXMOh"]}  
 
 ## To test the service
 You can test the service with curl, for example, as below.  
